@@ -1,7 +1,8 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { createClient, User } from '@supabase/supabase-js'
+import { createClient } from '@/utils/supabase/client' 
+import { type User } from '@supabase/supabase-js'
 import { useRouter } from 'next/navigation'
 import MotionWrapper from '@/components/MotionWrapper'
 import FileUploader from '@/components/FileUploader'
@@ -9,10 +10,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge"
 import { CheckCircle2 } from 'lucide-react'
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-)
+const supabase = createClient()
 
 export default function SubmissionsPage() {
   const router = useRouter()
@@ -48,7 +46,7 @@ export default function SubmissionsPage() {
 
   if (loading || !user) return null
 
-  const teamNameDisplay = user.email?.split('@')[0] || "Team"
+  const teamNameDisplay = user.user_metadata?.organization_name || user.email?.split('@')[0] || "Team"
 
   return (
     <div className="max-w-4xl mx-auto">
@@ -91,7 +89,7 @@ export default function SubmissionsPage() {
               {hasSubmitted ? (
                 // SUCCESS STATE
                 <div className="bg-green-900/10 p-6 rounded-lg border border-green-900/30 flex items-center gap-4">
-                   <div className="h-12 w-12 bg-green-500/20 rounded-full flex items-center justify-center flex-shrink-0">
+                   <div className="h-12 w-12 bg-green-500/20 rounded-full flex items-center justify-center shrink-0">
                       <CheckCircle2 className="h-6 w-6 text-green-500" />
                    </div>
                    <div>

@@ -1,7 +1,8 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { createClient, User } from '@supabase/supabase-js'
+import { createClient } from '@/utils/supabase/client'
+import { type User } from '@supabase/supabase-js'
 import { useRouter } from 'next/navigation'
 import FileUploader from '../components/FileUploader'
 import MotionWrapper from '../components/MotionWrapper'
@@ -9,10 +10,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge"
 import { CheckCircle2, Clock } from 'lucide-react'
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-)
+const supabase = createClient()
 
 export default function Dashboard() {
   const router = useRouter()
@@ -53,8 +51,11 @@ export default function Dashboard() {
       </div>
     )
   }
+  console.log('User Info:', user);
+  console.log('fg', user.user_metadata);
 
-  const teamNameDisplay = user.email?.split('@')[0] || "Team"
+  const teamNameDisplay = user.user_metadata?.organization_name || user.email?.split('@')[0] || "Team"
+  
 
   return (
     <div className="max-w-5xl mx-auto">

@@ -49,7 +49,6 @@ export default function FileUploader({ teamName, onUploadComplete }: { teamName:
       if (onUploadComplete) onUploadComplete()
 
     } catch (error) {
-      // FIX: Removed ': any' and added type assertion
       alert(`Error: ${(error as Error).message}`)
     } finally {
       setUploading(false)

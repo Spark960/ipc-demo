@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { createClient } from '@supabase/supabase-js'
+import { createClient } from '@/utils/supabase/client'
 import { useRouter } from 'next/navigation'
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
@@ -9,10 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import MotionWrapper from '@/components/MotionWrapper'
 import StarBackground from '@/components/StarBackground' // We bring the stars inside specifically for this view
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-)
+const supabase = createClient()
 
 export default function LoginPage() {
   const router = useRouter()
@@ -41,8 +38,7 @@ export default function LoginPage() {
   }
 
   return (
-    // FIX: z-[999] ensures it sits above everything. w-screen/h-screen forces full viewport.
-    <div className="fixed inset-0 z-[999] w-screen h-screen flex items-center justify-center bg-neutral-950">
+    <div className="fixed inset-0 z-999 w-screen h-screen flex items-center justify-center bg-neutral-950">
       
       {/* Background just for this overlay */}
       <div className="absolute inset-0 z-0">

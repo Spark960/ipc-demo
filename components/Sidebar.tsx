@@ -7,7 +7,7 @@ import LogoutButton from './LogoutButton'
 export default function Sidebar() {
   const pathname = usePathname()
 
-  // FIX: If we are on login page, HIDE the sidebar completely
+ 
   if (pathname === '/login') return null
   
   const isActive = (path: string) => pathname === path
