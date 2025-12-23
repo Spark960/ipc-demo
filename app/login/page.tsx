@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import MotionWrapper from '@/components/MotionWrapper'
-import StarBackground from '@/components/StarBackground' // We bring the stars inside specifically for this view
+import StarBackground from '@/components/StarBackground' 
 
 const supabase = createClient()
 
