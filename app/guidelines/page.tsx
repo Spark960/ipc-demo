@@ -2,14 +2,16 @@
 
 import MotionWrapper from '@/components/MotionWrapper'
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button" // Import Button
-import { Download } from 'lucide-react' // Import Icon
+import { Button } from "@/components/ui/button"
+import { Download } from 'lucide-react'
 
 export default function GuidelinesPage() {
   const schedule = [
     { phase: "Registrations", details: "Portal Opening & Team Signup", date: "Dec 9 - Dec 17", highlight: false },
-    { phase: "Case Study", details: "Submission of Policy Case Study", date: "Dec 25, 2025", highlight: true },
-    { phase: "Evaluation", details: "Group Discussion (GD) Round", date: "Jan 10, 2026", highlight: false },
+    // HIGHLIGHT REMOVED
+    { phase: "Case Study", details: "Submission of Policy Case Study", date: "Dec 25, 2025", highlight: false },
+    // UPDATED DATE & HIGHLIGHT ADDED
+    { phase: "Evaluation", details: "Group Discussion (GD) Round", date: "Jan 11, 2026", highlight: true },
     { phase: "Final Doc", details: "Policy Recommendation Document", date: "Jan 21, 2026", highlight: false },
     { phase: "Grand Finale", details: "Presentation at MES 2026 (MIT Manipal)", date: "Feb 11-12, 2026", highlight: false },
   ]
@@ -41,7 +43,7 @@ export default function GuidelinesPage() {
           </Card>
         </MotionWrapper>
 
-        {/* Timeline Section (Responsive: Table on Desktop, Cards on Mobile) */}
+        {/* Timeline Section */}
         <MotionWrapper delay={0.2}>
           <Card className="bg-neutral-900/60 backdrop-blur-md border-neutral-800/80">
             <CardHeader>
@@ -49,7 +51,7 @@ export default function GuidelinesPage() {
             </CardHeader>
             <CardContent>
               
-              {/* --- DESKTOP VIEW (Hidden on Mobile) --- */}
+              {/* DESKTOP VIEW */}
               <div className="hidden md:block relative overflow-x-auto">
                 <table className="w-full text-sm text-left text-neutral-400">
                   <thead className="text-xs uppercase bg-neutral-950/50 text-neutral-200">
@@ -77,7 +79,7 @@ export default function GuidelinesPage() {
                 </table>
               </div>
 
-              {/* --- MOBILE VIEW (Hidden on Desktop) --- */}
+              {/* MOBILE VIEW */}
               <div className="md:hidden space-y-4">
                 {schedule.map((item, index) => (
                   <div 
@@ -131,7 +133,6 @@ export default function GuidelinesPage() {
                     <p className="text-white font-medium mb-1">Expected Format</p>
                     <p>Download the official sample PDF structure.</p>
                  </div>
-                 {/* Make sure 'IPC_Format.pdf' is in your public folder! */}
                  <a href="/IPC_Format.pdf" download className="w-full md:w-auto">
                     <Button variant="outline" className="w-full gap-2 border-neutral-700 hover:bg-neutral-800 hover:text-white">
                         <Download className="h-4 w-4" /> Download Template
