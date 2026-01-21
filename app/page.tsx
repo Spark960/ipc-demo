@@ -4,12 +4,12 @@ import { useEffect, useState } from 'react'
 import { createClient } from '@/utils/supabase/client'
 import { type User } from '@supabase/supabase-js'
 import { useRouter } from 'next/navigation'
-// Removed FileUploader import
+// Re-imported FileUploader for the active task card
+import FileUploader from '../components/FileUploader' 
 import MotionWrapper from '../components/MotionWrapper'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button" // Added for download button
-import { CheckCircle2, FileText, Download, AlertCircle } from 'lucide-react' // Added icons
+import { CheckCircle2, AlertCircle, Calendar } from 'lucide-react'
 
 const supabase = createClient()
 
@@ -17,17 +17,17 @@ export default function Dashboard() {
   const router = useRouter()
   const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
-  const [hasSubmitted, setHasSubmitted] = useState(false)
+  const [hasFinalDoc, setHasFinalDoc] = useState(false)
 
   const checkSubmissionStatus = async (userId: string) => {
     const { data } = await supabase
       .from('submissions')
       .select('*')
       .eq('user_id', userId)
-      .eq('stage', 'case-study')
+      .eq('stage', 'final-doc') // Checking for PHASE 4 now
       .single()
 
-    if (data) setHasSubmitted(true)
+    if (data) setHasFinalDoc(true)
   }
 
   useEffect(() => {
@@ -65,8 +65,8 @@ export default function Dashboard() {
             <p className="text-neutral-400 mt-2">Track your team&apos;s progress for IPC 2026.</p>
           </div>
           <div className="text-right">
-              <Badge className="bg-blue-600/20 text-blue-400 border-blue-800 px-4 py-1">
-                  Phase 3: Pre-GD
+              <Badge className="bg-red-600/20 text-red-400 border-red-800 px-4 py-1 animate-pulse">
+                  Phase 4: Final Submission
               </Badge>
           </div>
         </header>
@@ -81,30 +81,30 @@ export default function Dashboard() {
             <CardTitle className="text-sm font-medium text-neutral-400">Next Deadline</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-white">Jan 11, 2026</div>
-            <p className="text-xs text-neutral-500 mt-1">GD Round</p>
+            <div className="text-2xl font-bold text-white">Feb 11, 2026</div>
+            <p className="text-xs text-neutral-500 mt-1">Grand Finale (Offline)</p>
           </CardContent>
         </Card>
         
-        {/* STATUS CARD (Refers to previous round status) */}
-        <Card className={`border-neutral-800 ${hasSubmitted ? 'bg-green-950/20 border-green-900/50' : 'bg-neutral-900'} hover:-translate-y-1`}>
+        {/* STATUS CARD (Current Phase) */}
+        <Card className={`border-neutral-800 ${hasFinalDoc ? 'bg-green-950/20 border-green-900/50' : 'bg-neutral-900'} hover:-translate-y-1`}>
           <CardHeader className="pb-2">
-             <CardTitle className="text-sm font-medium text-neutral-400">Case Study Status</CardTitle>
+             <CardTitle className="text-sm font-medium text-neutral-400">Final Submission</CardTitle>
           </CardHeader>
           <CardContent>
-            {hasSubmitted ? (
+            {hasFinalDoc ? (
                 <div>
                     <div className="flex items-center gap-2 text-2xl font-bold text-green-400">
-                        <CheckCircle2 className="h-6 w-6" /> In Review
+                        <CheckCircle2 className="h-6 w-6" /> Received
                     </div>
-                    <p className="text-xs text-green-500/70 mt-1">Phase 2 Completed</p>
+                    <p className="text-xs text-green-500/70 mt-1">Ready for evaluation</p>
                 </div>
             ) : (
                 <div>
-                    <div className="flex items-center gap-2 text-2xl font-bold text-red-500">
-                        <AlertCircle className="h-6 w-6" /> Closed
+                    <div className="flex items-center gap-2 text-xl font-bold text-red-500">
+                        <AlertCircle className="h-6 w-6" /> Due 21st Jan, 2026
                     </div>
-                    <p className="text-xs text-neutral-500 mt-1">Submission missed</p>
+                    <p className="text-xs text-neutral-500 mt-1">Upload Pending</p>
                 </div>
             )}
           </CardContent>
@@ -113,53 +113,58 @@ export default function Dashboard() {
         {/* NEXT PHASE CARD */}
         <Card className="bg-neutral-900/60 backdrop-blur-md border-neutral-800/80 hover:-translate-y-1">
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-neutral-400">Next Phase Info</CardTitle>
+            <CardTitle className="text-sm font-medium text-neutral-400">Event Info</CardTitle>
           </CardHeader>
           <CardContent>
-             <div className="text-2xl font-bold text-white">Final Doc</div>
-             <p className="text-xs text-neutral-500 mt-1">Due Jan 21</p>
+             <div className="flex items-center gap-2 text-2xl font-bold text-white">
+                <Calendar className="h-6 w-6" /> MES 2026
+             </div>
+             <p className="text-xs text-neutral-500 mt-1">Manipal University</p>
           </CardContent>
         </Card>
       </MotionWrapper>
 
-      {/* Active Tasks - NOW SHOWS PHASE 3 DOWNLOAD */}
+      {/* Active Tasks - PHASE 4 UPLOAD */}
       <MotionWrapper delay={0.4}>
         <section>
           <h2 className="text-xl font-semibold mb-4 text-white">Active Tasks</h2>
           
-          <Card className="bg-neutral-900/60 backdrop-blur-md border-blue-900/50 text-white">
-              <CardHeader>
-              <div className="flex justify-between items-center">
-                  <div>
-                      <CardTitle>GD Round Preparation</CardTitle>
-                      <CardDescription className="text-neutral-400 mt-1">
-                      Download the material for the upcoming Group Discussion round.
-                      </CardDescription>
-                  </div>
-                  <Badge variant="outline" className="border-blue-500 text-blue-400 bg-blue-500/10">Active Phase</Badge>
-              </div>
-              </CardHeader>
-              <CardContent>
-                <div className="bg-neutral-950 p-6 rounded-lg border border-neutral-800 flex flex-col md:flex-row items-center justify-between gap-4">
-                      <div className="flex items-center gap-3">
-                          <div className="p-3 bg-blue-900/20 rounded-lg">
-                              <FileText className="h-6 w-6 text-blue-400" />
-                          </div>
-                          <div>
-                              <h4 className="text-white font-medium">GD Topic / Material</h4>
-                              <p className="text-sm text-neutral-400">Preparation document for Round 3</p>
-                          </div>
-                      </div>
-                      
-                      {/* MAKE SURE TO PUT 'GD_Material.pdf' IN YOUR PUBLIC FOLDER */}
-                      <a href="/GD_GUIDELINES_IPC2026.pdf" download className="w-full md:w-auto">
-                        <Button className="w-full gap-2 bg-blue-600 hover:bg-blue-700">
-                            <Download className="h-4 w-4" /> Download PDF
-                        </Button>
-                      </a>
-                  </div>
-              </CardContent>
-          </Card>
+          {hasFinalDoc ? (
+            <Card className="bg-neutral-900 border-green-900/30 text-white">
+                <CardContent className="flex flex-col items-center justify-center py-12 text-center">
+                    <div className="h-16 w-16 bg-green-500/10 rounded-full flex items-center justify-center mb-4">
+                        <CheckCircle2 className="h-8 w-8 text-green-500" />
+                    </div>
+                    <h3 className="text-xl font-bold text-white mb-2">You are all set!</h3>
+                    <p className="text-neutral-400 max-w-md">
+                        Your final policy document has been recorded. Best of luck for the Grand Finale selections!
+                    </p>
+                </CardContent>
+            </Card>
+          ) : (
+            <Card className="glass-card text-white border-blue-600/50">
+                <CardHeader>
+                <div className="flex justify-between items-center">
+                    <div>
+                        <CardTitle>Final Policy Submission</CardTitle>
+                        <CardDescription className="text-neutral-400 mt-1">
+                        Upload your final consolidated policy document (Phase 4).
+                        </CardDescription>
+                    </div>
+                    <Badge variant="outline" className="border-red-500 text-red-500 bg-red-500/10">Due 21st Jan, 2026</Badge>
+                </div>
+                </CardHeader>
+                <CardContent>
+                    <FileUploader 
+                        teamName={teamNameDisplay}
+                        bucketName="final-documents" // NEW BUCKET
+                        stage="final-doc"            // NEW STAGE
+                        fileSuffix="final"           // NEW SUFFIX
+                        onUploadComplete={() => checkSubmissionStatus(user.id)} 
+                    />
+                </CardContent>
+            </Card>
+          )}
         </section>
       </MotionWrapper>
 

@@ -7,42 +7,66 @@ import { Button } from "@/components/ui/button"
 
 const supabase = createClient()
 
-export default function FileUploader({ teamName, onUploadComplete }: { teamName: string, onUploadComplete?: () => void }) {
+interface FileUploaderProps {
+  teamName: string
+  onUploadComplete?: () => void
+  bucketName?: string // e.g., 'submissions' or 'final-documents'
+  stage?: string      // e.g., 'case-study' or 'final-doc'
+  fileSuffix?: string // e.g., 'casestudy' or 'final'
+}
+
+export default function FileUploader({ 
+  teamName, 
+  onUploadComplete,
+  bucketName = 'submissions', // Default to old bucket
+  stage = 'case-study',       // Default to old stage
+  fileSuffix = 'casestudy'    // Default to old naming
+}: FileUploaderProps) {
+  
   const [uploading, setUploading] = useState(false)
   
   const handleUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     try {
       if (!event.target.files || event.target.files.length === 0) return
-      setUploading(true)
 
       const file = event.target.files[0]
-      const fileExt = file.name.split('.').pop()
-      const fileName = `${teamName}-casestudy.${fileExt}` 
+      
+      // 1. Check File Size (10MB Limit)
+      if (file.size > 10 * 1024 * 1024) {
+        alert("File is too large! Max 10MB.")
+        return
+      }
 
-      // 1. Get current User ID
+      setUploading(true)
+
+      const fileExt = file.name.split('.').pop()
+      // Create dynamic filename: "TeamName-final.pdf"
+      const fileName = `${teamName}-${fileSuffix}.${fileExt}` 
+
+      // 2. Get current User ID
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) throw new Error("User not found")
 
-      // 2. Upload File to Storage
+      // 3. Upload File to Storage (Dynamic Bucket)
       const { error: uploadError } = await supabase.storage
-        .from('submissions')
+        .from(bucketName)
         .upload(fileName, file, { upsert: true })
 
       if (uploadError) throw uploadError
 
-      // 3. Record in Database
+      // 4. Record in Database (Dynamic Stage)
       const { error: dbError } = await supabase
         .from('submissions')
         .insert({
           user_id: user.id,
           team_name: teamName,
           file_url: fileName,
-          stage: 'case-study'
+          stage: stage // Saves as 'final-doc' now
         })
 
       if (dbError) throw dbError
 
-      // 4. Notify Parent Component
+      // 5. Notify Parent Component
       if (onUploadComplete) onUploadComplete()
 
     } catch (error) {
@@ -58,12 +82,12 @@ export default function FileUploader({ teamName, onUploadComplete }: { teamName:
       {uploading ? (
         <div className="text-center">
             <Loader2 className="h-10 w-10 text-blue-500 animate-spin mx-auto mb-4" />
-            <p className="text-neutral-400">Uploading your masterpiece...</p>
+            <p className="text-neutral-400">Uploading your document...</p>
         </div>
       ) : (
         <>
           <UploadCloud className="h-12 w-12 text-neutral-600 mb-4" />
-          <h3 className="text-lg font-medium text-white mb-1">Upload Case Study</h3>
+          <h3 className="text-lg font-medium text-white mb-1">Upload PDF</h3>
           <p className="text-sm text-neutral-500 mb-6">PDF format only. Max 10MB.</p>
           
           <div className="relative">
